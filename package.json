@@ -1,0 +1,25 @@
+{
+  "name": "@popovmp/logger",
+  "version": "1.0.0",
+  "description": "Logger",
+  "main": "index.mts",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "validate": "tsc -p tsconfig.json",
+    "test": "set NODE_NO_WARNINGS=1&&node --experimental-strip-types --test \"./tests/*.test.mts\"",
+    "prepublishOnly": "node --test",
+    "publishPackage": "npm publish --access=public"
+  },
+  "dependencies": {
+    "@popovmp/file-writer": "1.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/popovmp/logger.git"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.1",
+    "typescript": "^5.5.4"
+  }
+}
