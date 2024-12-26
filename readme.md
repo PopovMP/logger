@@ -1,8 +1,9 @@
 # A simple Logger helper for nodejs
 
-**logger** is a straightforward logger written in TypeScript. It logs to a single predefined file.
-When an option `{tee: true}` is given, **logger** shows colored messages in the console.
-If a log file is not defined, **logger** writes to the console only.
+**logger** is a straightforward logger written in TypeScript. It logs to a
+single predefined file. When an option `{tee: true}` is given, **logger** shows
+colored messages in the console. If a log file is not defined, **logger** writes
+to the console only.
 
 Homepage: https://github.com/popovmp/logger
 
@@ -14,7 +15,7 @@ npm install @popovmp/logger
 
 ## Usage
 
-```javascript
+````javascript
 import {initLogger, logError, logSuccess, logWarning} from "./lib/logger.mts";
 
 // Init logger
@@ -57,40 +58,46 @@ logInfo("Hello, World!");                          // => 2020-08-21 06:21:11 [IN
 logInfo("GET index", "app::router");               // => 2020-08-21 06:21:11 [INFO] [app::router] GET index
 logError("Ohh!", "bank::delete-account");          // => 2020-08-21 06:21:11 [ERROR] [bank::delete-account] Ohh!
 logText("So Long, and Thanks for All the Fish!");  // => So Long, and Thanks for All the Fish!
-```
+````
 
 ## Last error
 
-**logger** has two methods for getting and resetting the last logged error message: `getLastError` and `resetLastError`.
+**logger** has two methods for getting and resetting the last logged error
+message: `getLastError` and `resetLastError`.
 
-`getLastError` returns the last logged error message by the `logError` or `logger.error` methods.
+`getLastError` returns the last logged error message by the `logError` or
+`logger.error` methods.
 
-You can reset the last error with the `resetLastError` method. When `resetLastError` is called without parameters,
-it sets the last error to `undefined`. `resetLastError` can be called with `null` to set the last error to `null`.
-
+You can reset the last error with the `resetLastError` method. When
+`resetLastError` is called without parameters, it sets the last error to
+`undefined`. `resetLastError` can be called with `null` to set the last error to
+`null`.
 
 ```javascript
-getLastError();         // undefined
+getLastError(); // undefined
 logError("some eror");
-getLastError();         // some error
+getLastError(); // some error
 resetLastError();
-getLastError();         // undefined
+getLastError(); // undefined
 ```
+
 ## Options
 
 The `filename` option sets the log filename.
 
-The `init` method accepts an options `options` parameter. It has two property `tee: boolean` and `suppress: string[]`.
+The `init` method accepts an options `options` parameter. It has two property
+`tee: boolean` and `suppress: string[]`.
 
 When `tee` is set to `true`, the logger doubles the message on the console.
 
-The `suppress` parameter accepts a string[]. It suppresses the logging of the tags included.
+The `suppress` parameter accepts a string[]. It suppresses the logging of the
+tags included.
 
 The possible values are:
 
 ```json
 {
- "suppress": ["debug", "text", "info", "error", "success"]
+  "suppress": ["debug", "text", "info", "error", "success"]
 }
 ```
 
@@ -206,4 +213,5 @@ logger.text(message);
 
 ## License
 
-`logger` is free for use and modification. No responsibilities for damages of any kind.
+`logger` is free for use and modification. No responsibilities for damages of
+any kind.
