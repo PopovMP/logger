@@ -7,28 +7,31 @@ import console                                from "node:console";
 
 import {appendAndForget} from "@popovmp/file-writer";
 
+/** @typedef {"debug"|"error"|"warning"|"info"|"success"|"text"} LogLevel */
+
 /**
- * @typedef {object} LoggerOptions
- *
- * @property {boolean}  [tee=false] - whether to log to console
- * @property {string[]} [suppress=[]] - tags to suppress.
- *   Possibilities: ["debug", "warning", "error", "info", "success", "text"]
+ * @typedef {object}      LoggerOptions
+ * @property {string}     [filepath]
+ * @property {boolean}    [tee]
+ * @property {LogLevel[]} [suppress]
  */
 
-/** @type {LoggerOptions} */
-const loggerOptions = {
+/** @type {{
+ *    filepath: string;
+ *    tee     : boolean;
+ *    suppress: LogLevel[];
+ * }}
+ */
+const options = {
+    filepath: "",
     tee     : false,
     suppress: [],
 };
 
-/** @type {string} */
-let logPath = "";
-let isInit  = false;
-
 /** @type {Error|object|string|undefined|null} */
 let lastError = undefined;
 
-/** @type {Record<string, string>} */
+/** @type {Record<LogLevel, string>} */
 const tagMap = {
     debug  : "[DEBUG]",
     error  : "[ERROR]",
@@ -38,9 +41,8 @@ const tagMap = {
     text   : "",
 };
 
-/** @type {Record<string, string>} */
-const colors = {
-    reset  : "\x1b[0m",
+/** @type {Record<LogLevel, string>} */
+const logColorMap = {
     debug  : "\x1b[33m", // yellow
     warning: "\x1b[33m", // yellow
     error  : "\x1b[31m", // red
@@ -49,30 +51,34 @@ const colors = {
     text   : "",
 };
 
+/** @type {string} */
+const resetColor = "\x1b[0m";
+
 /**
- * Sets the log path.
- *
- *
- * @param {string } [logFilePath=""] - Path to the log file.
- *
- * @param {LoggerOptions} [options={}] - Logger options
+ * @param {LoggerOptions} loggerOptions
+ * @returns {void}
  */
-export function initLogger(logFilePath = "", options = {}) {
-    logPath = logFilePath;
-    isInit  = true;
-
-    if (typeof options.tee === "boolean") {
-        loggerOptions.tee = options.tee;
+export function initLogger(loggerOptions) {
+    if (typeof loggerOptions.filepath === "string") {
+        options.filepath = loggerOptions.filepath;
+    }
+    if (typeof loggerOptions.tee === "boolean") {
+        options.tee = loggerOptions.tee;
+    }
+    if (Array.isArray(loggerOptions.suppress)) {
+        options.suppress = loggerOptions.suppress.slice();
     }
 
-    if (Array.isArray(options.suppress)) {
-        loggerOptions.suppress = options.suppress.slice();
+    if (options.filepath !== "" && !existsSync(options.filepath)) {
+        mkdirSync(dirname(options.filepath), {recursive: true});
+        writeFileSync(options.filepath, "", "utf8");
     }
 
-    if (logPath !== "" && !existsSync(logPath)) {
-        mkdirSync(dirname(logPath), {recursive: true});
-        writeFileSync(logPath, "", "utf8");
+    if (options.filepath === "") {
+        options.tee = true;
     }
+
+    Object.freeze(options);
 }
 
 /**
@@ -170,40 +176,38 @@ export function resetLastError(value = null) {
 /**
  * Logs a message to a log file
  *
- * @param {string}              tag
+ * @param {LogLevel}            tag
  * @param {Error|object|string} message
  * @param {string}              [sender]
  *
  * @returns {void}
  */
 function logMessage(tag, message, sender) {
-    if (loggerOptions.suppress && loggerOptions.suppress.includes(tag)) {
-        return;
-    }
+    if (options.suppress.includes(tag)) return;
 
     const text = ["info", "error", "debug", "warning", "success"].includes(tag)
         ? composeMessage(tag, message, sender)
         : message;
 
-    if (isInit && logPath !== "") {
+    if (options.filepath !== "") {
         try {
-            appendAndForget(logPath, text + EOL);
+            appendAndForget(options.filepath, text + EOL);
         } catch (/** @type {any} */ error) {
             console.error("Failed to write to log file", error);
         }
     }
 
-    if (!isInit || loggerOptions.tee || logPath === "") {
-        console.log(colors[tag] + text + colors.reset);
+    if (options.tee) {
+        console.log(logColorMap[tag] + text + resetColor);
     }
 }
 
 /**
  * Composes the log text.
  *
- * @param {string} tag
- * @param {any}    message
- * @param {string} [sender]
+ * @param {LogLevel} tag
+ * @param {any}      message
+ * @param {string}   [sender]
  *
  * @returns {string}
  */
@@ -227,7 +231,7 @@ function composeMessage(tag, message, sender) {
  * @returns { string }
  */
 function getLocalTimeText() {
-    /** @type { Date } */
+    /** @type {Date} */
     const now = new Date();
 
     const year   =  now.getFullYear();

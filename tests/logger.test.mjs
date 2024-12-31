@@ -10,16 +10,18 @@ import {describe, it}                                    from "node:test";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
 
+/** @type {string} */
 const logPath = join(__dirname, "/logs/log.txt");
 
 if (existsSync(logPath)) {
     unlinkSync(logPath);
 }
 
-const options = {tee: true, suppress: ["text"]};
+/** @type {import("../index.mjs").LoggerOptions} */
+const options = {filepath: logPath, tee: true, suppress: ["text"]};
 import {logDebug, logError, logInfo, logText, logSuccess, initLogger} from "../index.mjs";
 
-initLogger(logPath, options);
+initLogger(options);
 
 describe("micro-logger", () => {
     describe("init(path, options)", () => {
@@ -48,7 +50,7 @@ describe("micro-logger", () => {
 
     describe("logSuccess(message, sender)", () => {
         it("log a success information", () => {
-            logSuccess("micro-logger is a very micro logger", "the author");
+            logSuccess("logger is a very easy logger", "the author");
         });
     });
 

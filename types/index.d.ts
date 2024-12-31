@@ -5,11 +5,12 @@ declare module "@popovmp/logger" {
     export type LogLevel = "debug" | "warning" | "error" | "info" | "success" | "text";
 
     export interface LoggerOptions {
+        filepath?: string;
         tee     ?: boolean;
         suppress?: LogLevel[];
     }
 
-    export function initLogger(logFilePath: string, options: LoggerOptions): void;
+    export function initLogger(options: LoggerOptions): void;
 
     export function logError  (message: Error|object|string, sender?: string): void;
     export function logDebug  (message: Error|object|string, sender?: string): void;

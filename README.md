@@ -20,7 +20,7 @@ import {initLogger, logError, logSuccess, logWarning} from "./lib/logger.mts";
 
 // Init logger
 const loggerOptions = {
-  filename: "my/logger/path/log.txt",
+  filepath: "my/logger/path/log.txt",
   tee     : true,
   suppress: ["debug"]
 };
@@ -83,7 +83,7 @@ getLastError(); // undefined
 
 ## Options
 
-The `filename` option sets the log filename.
+The `filepath` option sets the log filepath.
 
 The `init` method accepts an options `options` parameter. It has two property
 `tee: boolean` and `suppress: string[]`.
@@ -107,10 +107,10 @@ The possible values are:
 
 ```javascript
 /**
- * @param {LoggerOptions} [options]
- * @return {void}
+ * @param {LoggerOptions} loggerOptions
+ * @returns {void}
  */
-logger.init(options);
+logger.init(loggerOptions);
 ```
 
 ```javascript
@@ -196,7 +196,7 @@ logger.error(message, sender);
 /**
  * Logs a success information to a log file
  *
- * @param {object|string} message
+ * @param {string} message
  * @param {string} [sender]
  */
 logger.success(message, sender);
@@ -206,7 +206,7 @@ logger.success(message, sender);
 /**
  * Logs an error to a log file
  *
- * @param { string } message
+ * @param {string} message
  */
 logger.text(message);
 ```
